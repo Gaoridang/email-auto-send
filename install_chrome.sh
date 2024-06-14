@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Install Chromium
+# Update and install necessary packages
 apt-get update
 apt-get install -y chromium chromium-driver
 
