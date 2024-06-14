@@ -9,7 +9,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from email.mime.text import MIMEText
 import smtplib
-import os
 
 
 def get_driver():
