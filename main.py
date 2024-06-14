@@ -20,6 +20,7 @@ def install_chrome():
             "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
         )
         os.system("sudo apt-get install -y ./google-chrome-stable_current_amd64.deb")
+        st.write("Chrome installed successfully.")
 
 
 def install_chromedriver():
@@ -31,6 +32,7 @@ def install_chromedriver():
         os.system("unzip chromedriver_linux64.zip")
         os.system("sudo mv chromedriver /usr/bin/chromedriver")
         os.system("sudo chmod +x /usr/bin/chromedriver")
+        st.write("ChromeDriver installed successfully.")
 
 
 def get_driver():
