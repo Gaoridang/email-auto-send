@@ -2,6 +2,7 @@ import re
 import time
 import streamlit as st
 import os
+import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -14,7 +15,6 @@ import smtplib
 
 
 def install_chrome():
-    # 크롬 다운로드 및 설치
     if not os.path.exists("/usr/bin/google-chrome"):
         os.system(
             "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
@@ -24,7 +24,6 @@ def install_chrome():
 
 
 def install_chromedriver():
-    # 크롬 드라이버 다운로드 및 설치
     if not os.path.exists("/usr/bin/chromedriver"):
         os.system(
             "wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
@@ -36,18 +35,30 @@ def install_chromedriver():
 
 
 def get_driver():
+    # Chrome 경로를 명시적으로 지정
+    chrome_path = "/usr/bin/google-chrome"
+    chrome_driver_path = "/usr/bin/chromedriver"
+
+    if not os.path.exists(chrome_path) or not os.path.exists(chrome_driver_path):
+        st.write("Chrome or ChromeDriver not found. Ensure both are installed.")
+        return None
+
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
+    options.binary_location = chrome_path
 
-    service = Service("/usr/bin/chromedriver")
+    service = Service(chrome_driver_path)
     return webdriver.Chrome(service=service, options=options)
 
 
 def get_comments(blog_url):
     driver = get_driver()
+    if driver is None:
+        return []
+
     driver.implicitly_wait(3)
 
     try:
