@@ -10,8 +10,9 @@ from selenium.webdriver.support import expected_conditions as EC
 from email.mime.text import MIMEText
 import smtplib
 
-
 # Streamlit 애플리케이션
+
+
 def install_chrome():
     # 크롬 다운로드 및 설치
     if not os.path.exists("/usr/bin/google-chrome"):
