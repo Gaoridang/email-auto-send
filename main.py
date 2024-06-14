@@ -94,7 +94,7 @@ def send_email(subject, body, to_email, from_email, email_password):
 
 
 def main():
-    st.title("네이버 이메일 자동화 (댓글 이벤트용)")
+    st.title("네이버 이메일 자동화 (댓글 이벤트용!)")
 
     blog_url = st.text_input("블로그 URL")
     email_sender = st.text_input("보내는 사람 이메일")
