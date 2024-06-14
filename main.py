@@ -38,7 +38,6 @@ def get_driver():
     chrome_driver_path = "/usr/bin/chromedriver"
 
     if not os.path.exists(chrome_path) or not os.path.exists(chrome_driver_path):
-        st.write("Chrome or ChromeDriver not found. Ensure both are installed.")
         return None
 
     options = webdriver.ChromeOptions()
@@ -55,19 +54,23 @@ def get_driver():
 def get_comments(blog_url, keyword=None):
     driver = get_driver()
     if driver is None:
+        st.write("Error: WebDriver not found.")
         return []
 
     driver.implicitly_wait(3)
 
     try:
+        st.write("Navigating to the blog URL...")
         driver.get(blog_url)
         time.sleep(3)
 
+        st.write("Switching to the iframe...")
         wait = WebDriverWait(driver, 10)
         iframe = wait.until(EC.presence_of_element_located((By.ID, "mainFrame")))
         driver.switch_to.frame(iframe)
 
         try:
+            st.write("Clicking the comment button...")
             comment_button = wait.until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Comi223439388627"]'))
             )
@@ -76,9 +79,11 @@ def get_comments(blog_url, keyword=None):
         except Exception as e:
             st.write(f"Error clicking comment button: {e}")
 
+        st.write("Scrolling to the bottom of the page...")
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
+        st.write("Fetching comments...")
         comments = [
             comment.text.strip()
             for comment in driver.find_elements(
@@ -86,6 +91,7 @@ def get_comments(blog_url, keyword=None):
             )
             if keyword is None or keyword in comment.text.strip()
         ]
+        st.write(f"Comments fetched: {comments}")
         return comments
     except Exception as e:
         st.write(f"Error fetching comments: {e}")
