@@ -6,9 +6,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from webdriver_manager.chrome import ChromeDriverManager
 from email.mime.text import MIMEText
 import smtplib
-import os
 
 
 def get_comments(blog_url):
@@ -23,20 +23,16 @@ def get_comments(blog_url):
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
 
-    # 명시적으로 Chrome의 경로를 지정
-    options.binary_location = "/usr/bin/google-chrome"
-
-    # ChromeDriver 경로를 명시적으로 지정
-    chrome_driver_path = "/usr/bin/chromedriver"
-
-    driver = webdriver.Chrome(service=Service(chrome_driver_path), options=options)
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()), options=options
+    )
     driver.implicitly_wait(3)
 
     try:
         driver.get(blog_url)
-        time.sleep(3)
+        time.sleep(10)
 
-        wait = WebDriverWait(driver, 10)
+        wait = WebDriverWait(driver, 30)
         iframe = wait.until(EC.presence_of_element_located((By.ID, "mainFrame")))
         driver.switch_to.frame(iframe)
 
@@ -45,7 +41,7 @@ def get_comments(blog_url):
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Comi223439388627"]'))
             )
             comment_button.click()
-            time.sleep(3)
+            time.sleep(5)
         except Exception as e:
             st.write(f"Error clicking comment button: {e}")
 
@@ -93,15 +89,15 @@ def send_email(subject, body, to_email, from_email, email_password):
 
 
 def main():
-    st.title("네이버 이메일 자동화 (댓글 이벤트용)")
+    st.title("Blog Comment Checker and Email Sender")
 
-    blog_url = st.text_input("블로그 URL")
-    email_sender = st.text_input("보내는 사람 이메일")
-    email_password = st.text_input("위 이메일의 비밀번호", type="password")
-    email_subject = st.text_input("이메일 제목")
-    email_body = st.text_area("이메일 내용")
+    blog_url = st.text_input("Blog URL")
+    email_sender = st.text_input("Sender Email")
+    email_password = st.text_input("Email Password", type="password")
+    email_subject = st.text_input("Email Subject")
+    email_body = st.text_area("Email Body")
 
-    if st.button("유효한 이메일 확인하기"):
+    if st.button("Check Comments"):
         comments = get_comments(blog_url)
         if comments:
             receiver_emails = find_emails_in_comments(comments)
