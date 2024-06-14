@@ -1,4 +1,3 @@
-import os
 import re
 import time
 import streamlit as st
@@ -9,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from email.mime.text import MIMEText
 import smtplib
+import os
 
 
 def get_comments(blog_url):
@@ -26,7 +26,10 @@ def get_comments(blog_url):
     # 명시적으로 Chrome의 경로를 지정
     options.binary_location = "/usr/bin/google-chrome"
 
-    driver = webdriver.Chrome(options=options)
+    # ChromeDriver 경로를 명시적으로 지정
+    chrome_driver_path = "/usr/bin/chromedriver"
+
+    driver = webdriver.Chrome(service=Service(chrome_driver_path), options=options)
     driver.implicitly_wait(3)
 
     try:
