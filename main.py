@@ -89,15 +89,15 @@ def send_email(subject, body, to_email, from_email, email_password):
 
 
 def main():
-    st.title("Blog Comment Checker and Email Sender")
+    st.title("네이버 이메일 자동화 (댓글 이벤트용)")
 
-    blog_url = st.text_input("Blog URL")
-    email_sender = st.text_input("Sender Email")
-    email_password = st.text_input("Email Password", type="password")
-    email_subject = st.text_input("Email Subject")
-    email_body = st.text_area("Email Body")
+    blog_url = st.text_input("블로그 URL")
+    email_sender = st.text_input("보내는 사람 이메일")
+    email_password = st.text_input("위 이메일의 비밀번호", type="password")
+    email_subject = st.text_input("이메일 제목")
+    email_body = st.text_area("이메일 내용")
 
-    if st.button("Check Comments"):
+    if st.button("유효한 이메일 확인하기"):
         comments = get_comments(blog_url)
         if comments:
             receiver_emails = find_emails_in_comments(comments)
