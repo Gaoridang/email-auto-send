@@ -1,1 +1,1 @@
-oingc@naver.com
+# This file will store the email addresses to which emails have already been sent.
