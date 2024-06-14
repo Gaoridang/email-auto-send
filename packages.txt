@@ -1,4 +1,2 @@
-firefox-esr
-geckodriver
 wget
 unzip
