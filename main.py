@@ -30,9 +30,9 @@ def get_comments(blog_url):
 
     try:
         driver.get(blog_url)
-        time.sleep(10)
+        time.sleep(3)
 
-        wait = WebDriverWait(driver, 30)
+        wait = WebDriverWait(driver, 3)
         iframe = wait.until(EC.presence_of_element_located((By.ID, "mainFrame")))
         driver.switch_to.frame(iframe)
 
@@ -41,7 +41,7 @@ def get_comments(blog_url):
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Comi223439388627"]'))
             )
             comment_button.click()
-            time.sleep(5)
+            time.sleep(3)
         except Exception as e:
             st.write(f"Error clicking comment button: {e}")
 
