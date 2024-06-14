@@ -9,6 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from email.mime.text import MIMEText
 import smtplib
+import os
 
 
 def get_comments(blog_url):
@@ -23,6 +24,9 @@ def get_comments(blog_url):
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option("useAutomationExtension", False)
 
+    # 명시적으로 Chrome의 경로를 지정
+    options.binary_location = "/usr/bin/google-chrome-stable"
+
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), options=options
     )
@@ -32,7 +36,7 @@ def get_comments(blog_url):
         driver.get(blog_url)
         time.sleep(3)
 
-        wait = WebDriverWait(driver, 3)
+        wait = WebDriverWait(driver, 10)
         iframe = wait.until(EC.presence_of_element_located((By.ID, "mainFrame")))
         driver.switch_to.frame(iframe)
 
