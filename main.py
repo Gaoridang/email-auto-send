@@ -15,6 +15,7 @@ if st.button("셀레니움 실행"):
     options.add_argument("--disable-gpu")  # GPU 비활성화
     options.add_argument("--no-sandbox")  # 샌드박스 비활성화
     options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
+    options.add_argument("--remote-debugging-port=9222")  # 필요한 경우 디버깅 포트 추가
 
     # 크롬 드라이버 초기화
     driver = webdriver.Chrome(service=service, options=options)
