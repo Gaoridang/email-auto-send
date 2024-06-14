@@ -10,10 +10,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from email.mime.text import MIMEText
 import smtplib
 
+
 # Streamlit 애플리케이션
-st.title("네이버 이메일 자동화 (댓글 이벤트용)")
-
-
 def install_chrome():
     # 크롬 다운로드 및 설치
     if not os.path.exists("/usr/bin/google-chrome"):
