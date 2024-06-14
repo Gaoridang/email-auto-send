@@ -7,10 +7,9 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.core.os_manager import ChromeType
 from email.mime.text import MIMEText
 import smtplib
+import os
 
 
 def get_driver():
@@ -23,10 +22,13 @@ def get_driver():
     options.add_argument("--disable-extensions")
     options.add_argument("--window-size=1920,1080")
 
-    return webdriver.Chrome(
-        service=Service(ChromeDriverManager(chrome_type=ChromeType.CHROMIUM).install()),
-        options=options,
-    )
+    # 명시적으로 Chrome의 경로를 지정
+    options.binary_location = "/usr/bin/google-chrome"
+
+    # ChromeDriver 경로를 명시적으로 지정
+    chrome_driver_path = "/usr/bin/chromedriver"
+
+    return webdriver.Chrome(service=Service(chrome_driver_path), options=options)
 
 
 def get_comments(blog_url):
@@ -94,7 +96,7 @@ def send_email(subject, body, to_email, from_email, email_password):
 
 
 def main():
-    st.title("네이버 이메일 자동화 (댓글 이벤트용!)")
+    st.title("네이버 이메일 자동화 (댓글 이벤트용)")
 
     blog_url = st.text_input("블로그 URL")
     email_sender = st.text_input("보내는 사람 이메일")
