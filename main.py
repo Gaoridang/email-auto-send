@@ -1,28 +1,44 @@
 import streamlit as st
+import os
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 
 # Streamlit 애플리케이션
 st.title("Streamlit에서 셀레니움 사용하기")
 
-# 버튼 클릭 시 셀레니움으로 크롬 브라우저 실행
+
+def install_chrome():
+    # 크롬 다운로드 및 설치
+    if not os.path.exists("/usr/bin/google-chrome"):
+        os.system(
+            "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+        )
+        os.system("sudo apt-get install -y ./google-chrome-stable_current_amd64.deb")
+
+
+def install_chromedriver():
+    # 크롬 드라이버 다운로드 및 설치
+    if not os.path.exists("/usr/bin/chromedriver"):
+        os.system(
+            "wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
+        )
+        os.system("unzip chromedriver_linux64.zip")
+        os.system("sudo mv chromedriver /usr/bin/chromedriver")
+        os.system("sudo chmod +x /usr/bin/chromedriver")
+
+
 if st.button("셀레니움 실행"):
-    # 크롬 드라이버 설정
-    service = Service(ChromeDriverManager().install())
+    install_chrome()
+    install_chromedriver()
+
     options = webdriver.ChromeOptions()
-    options.add_argument("--headless")  # GUI 없이 실행
-    options.add_argument("--disable-gpu")  # GPU 비활성화
-    options.add_argument("--no-sandbox")  # 샌드박스 비활성화
-    options.add_argument("--disable-dev-shm-usage")  # /dev/shm 사용 비활성화
-    options.add_argument("--remote-debugging-port=9222")  # 필요한 경우 디버깅 포트 추가
+    options.add_argument("--headless")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
 
-    # 크롬 드라이버 초기화
+    service = Service("/usr/bin/chromedriver")
     driver = webdriver.Chrome(service=service, options=options)
-
-    # 네이버 웹 페이지 열기
     driver.get("https://www.naver.com")
     st.write("페이지 타이틀:", driver.title)
-
-    # 드라이버 종료
     driver.quit()
