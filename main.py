@@ -11,18 +11,20 @@ from email.mime.text import MIMEText
 import smtplib
 
 # Streamlit 애플리케이션
+st.title("네이버 이메일 자동화 (댓글 이벤트용)")
 
 
 def install_chrome():
+    # 크롬 다운로드 및 설치
     if not os.path.exists("/usr/bin/google-chrome"):
         os.system(
             "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
         )
         os.system("sudo apt-get install -y ./google-chrome-stable_current_amd64.deb")
-        st.write("Chrome installed successfully.")
 
 
 def install_chromedriver():
+    # 크롬 드라이버 다운로드 및 설치
     if not os.path.exists("/usr/bin/chromedriver"):
         os.system(
             "wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
@@ -30,47 +32,32 @@ def install_chromedriver():
         os.system("unzip chromedriver_linux64.zip")
         os.system("sudo mv chromedriver /usr/bin/chromedriver")
         os.system("sudo chmod +x /usr/bin/chromedriver")
-        st.write("ChromeDriver installed successfully.")
 
 
 def get_driver():
-    chrome_path = "/usr/bin/google-chrome"
-    chrome_driver_path = "/usr/bin/chromedriver"
-
-    if not os.path.exists(chrome_path) or not os.path.exists(chrome_driver_path):
-        return None
-
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
     options.add_argument("--disable-gpu")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    options.binary_location = chrome_path
 
-    service = Service(chrome_driver_path)
+    service = Service("/usr/bin/chromedriver")
     return webdriver.Chrome(service=service, options=options)
 
 
-def get_comments(blog_url, keyword=None):
+def get_comments(blog_url):
     driver = get_driver()
-    if driver is None:
-        st.write("Error: WebDriver not found.")
-        return []
-
     driver.implicitly_wait(3)
 
     try:
-        st.write("Navigating to the blog URL...")
         driver.get(blog_url)
         time.sleep(3)
 
-        st.write("Switching to the iframe...")
         wait = WebDriverWait(driver, 10)
         iframe = wait.until(EC.presence_of_element_located((By.ID, "mainFrame")))
         driver.switch_to.frame(iframe)
 
         try:
-            st.write("Clicking the comment button...")
             comment_button = wait.until(
                 EC.element_to_be_clickable((By.XPATH, '//*[@id="Comi223439388627"]'))
             )
@@ -79,19 +66,15 @@ def get_comments(blog_url, keyword=None):
         except Exception as e:
             st.write(f"Error clicking comment button: {e}")
 
-        st.write("Scrolling to the bottom of the page...")
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
 
-        st.write("Fetching comments...")
         comments = [
             comment.text.strip()
             for comment in driver.find_elements(
                 By.CSS_SELECTOR, "div.u_cbox_comment_box"
             )
-            if keyword is None or keyword in comment.text.strip()
         ]
-        st.write(f"Comments fetched: {comments}")
         return comments
     except Exception as e:
         st.write(f"Error fetching comments: {e}")
@@ -130,7 +113,6 @@ def main():
     st.title("네이버 이메일 자동화 (댓글 이벤트용)")
 
     blog_url = st.text_input("블로그 URL")
-    keyword = st.text_input("키워드 (옵션)")
     email_sender = st.text_input("보내는 사람 이메일")
     email_password = st.text_input("위 이메일의 비밀번호", type="password")
     email_subject = st.text_input("이메일 제목")
@@ -139,7 +121,7 @@ def main():
     if st.button("유효한 이메일 확인하기"):
         install_chrome()
         install_chromedriver()
-        comments = get_comments(blog_url, keyword)
+        comments = get_comments(blog_url)
         if comments:
             receiver_emails = find_emails_in_comments(comments)
             if receiver_emails:
