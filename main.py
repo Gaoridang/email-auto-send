@@ -2,7 +2,6 @@ import re
 import time
 import streamlit as st
 import os
-import subprocess
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
@@ -35,7 +34,6 @@ def install_chromedriver():
 
 
 def get_driver():
-    # Chrome 경로를 명시적으로 지정
     chrome_path = "/usr/bin/google-chrome"
     chrome_driver_path = "/usr/bin/chromedriver"
 
@@ -54,7 +52,7 @@ def get_driver():
     return webdriver.Chrome(service=service, options=options)
 
 
-def get_comments(blog_url):
+def get_comments(blog_url, keyword=None):
     driver = get_driver()
     if driver is None:
         return []
@@ -86,6 +84,7 @@ def get_comments(blog_url):
             for comment in driver.find_elements(
                 By.CSS_SELECTOR, "div.u_cbox_comment_box"
             )
+            if keyword is None or keyword in comment.text.strip()
         ]
         return comments
     except Exception as e:
@@ -125,6 +124,7 @@ def main():
     st.title("네이버 이메일 자동화 (댓글 이벤트용)")
 
     blog_url = st.text_input("블로그 URL")
+    keyword = st.text_input("키워드 (옵션)")
     email_sender = st.text_input("보내는 사람 이메일")
     email_password = st.text_input("위 이메일의 비밀번호", type="password")
     email_subject = st.text_input("이메일 제목")
@@ -133,7 +133,7 @@ def main():
     if st.button("유효한 이메일 확인하기"):
         install_chrome()
         install_chromedriver()
-        comments = get_comments(blog_url)
+        comments = get_comments(blog_url, keyword)
         if comments:
             receiver_emails = find_emails_in_comments(comments)
             if receiver_emails:
