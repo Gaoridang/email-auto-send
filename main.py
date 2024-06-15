@@ -8,37 +8,44 @@ st.title("Streamlit에서 셀레니움 사용하기")
 
 
 def install_chrome():
-    # 크롬 다운로드 및 설치
-    if not os.path.exists("/usr/bin/google-chrome"):
+    if not os.path.exists("google-chrome"):
+        # 크롬 설치
         os.system(
-            "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb"
+            "wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O google-chrome.deb"
         )
-        os.system("sudo apt-get install -y ./google-chrome-stable_current_amd64.deb")
+        os.system("dpkg -x google-chrome.deb .")
+        os.system("mv opt/google/chrome/google-chrome .")
+        os.system("chmod +x google-chrome")
+        os.system("rm -rf opt google-chrome.deb")
 
 
 def install_chromedriver():
-    # 크롬 드라이버 다운로드 및 설치
-    if not os.path.exists("/usr/bin/chromedriver"):
+    if not os.path.exists("chromedriver"):
+        # 크롬 드라이버 설치
         os.system(
             "wget https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip"
         )
         os.system("unzip chromedriver_linux64.zip")
-        os.system("sudo mv chromedriver /usr/bin/chromedriver")
-        os.system("sudo chmod +x /usr/bin/chromedriver")
+        os.system("chmod +x chromedriver")
+        os.system("rm chromedriver_linux64.zip")
 
 
 if st.button("셀레니움 실행"):
     install_chrome()
     install_chromedriver()
 
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
+    # 크롬 실행 경로 설정
+    chrome_options = webdriver.ChromeOptions()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.binary_location = os.path.abspath("./google-chrome")
 
-    service = Service("/usr/bin/chromedriver")
-    driver = webdriver.Chrome(service=service, options=options)
+    service = Service(os.path.abspath("./chromedriver"))
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+
+    # 네이버 웹 페이지 열기
     driver.get("https://www.naver.com")
     st.write("페이지 타이틀:", driver.title)
     driver.quit()
