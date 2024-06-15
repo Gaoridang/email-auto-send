@@ -1,24 +1,25 @@
 import streamlit as st
-from playwright.sync_api import sync_playwright
-import os
-
-# Playwright 설치 경로 설정
-os.environ["PLAYWRIGHT_BROWSERS_PATH"] = (
-    "0"  # This sets Playwright to install browsers in a default path
-)
+from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 
 # Streamlit 앱 시작
-st.title("Naver Title Scraper with Playwright")
+st.title("Naver Title Scraper with Selenium")
 
 
 def get_page_title(url):
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=True)
-        page = browser.new_page()
-        page.goto(url)
-        title = page.title()
-        browser.close()
-        return title
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--no-sandbox")
+
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=chrome_options)
+    driver.get(url)
+    title = driver.title
+    driver.quit()
+    return title
 
 
 # URL 입력받기
