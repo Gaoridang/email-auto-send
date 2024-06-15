@@ -40,9 +40,10 @@ if st.button("셀레니움 실행"):
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.binary_location = "./google-chrome"
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.binary_location = os.path.abspath("./google-chrome")
 
-    service = Service("./chromedriver")
+    service = Service(os.path.abspath("./chromedriver"))
     driver = webdriver.Chrome(service=service, options=chrome_options)
 
     # 네이버 웹 페이지 열기
