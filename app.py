@@ -1,5 +1,11 @@
 import streamlit as st
 from playwright.sync_api import sync_playwright
+import os
+
+# Playwright 설치 경로 설정
+os.environ["PLAYWRIGHT_BROWSERS_PATH"] = (
+    "0"  # This sets Playwright to install browsers in a default path
+)
 
 # Streamlit 앱 시작
 st.title("Naver Title Scraper with Playwright")
